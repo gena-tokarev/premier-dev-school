@@ -12,6 +12,8 @@ If you follow SRP then you most likely to achieve OCP, since if your class is re
 
 ## Examples:
 
+### Example 1:
+
 Suppose we have the following Product and ProductList classes that calculate the total cost of a list of products in a given currency using a currency factor:
 ```typescript
 class Product {
@@ -154,3 +156,70 @@ const productList = new ProductList(products, discountConverter);
 console.log(productList.getTotalCost()); // expected output: 22
 
 ```
+
+### Example 2:
+
+Suppose we have Shape interface and different shapes implementing it. To follow OCP we can use the Factory pattern:
+
+```typescript
+interface Shape {
+    draw(): void;
+}
+
+class Circle implements Shape {
+    constructor(private radius: number) {}
+    draw() {
+        console.log(`Drawing a circle with radius ${this.radius}`);
+    }
+}
+
+class Square implements Shape {
+    constructor(private sideLength: number) {}
+    draw() {
+        console.log(`Drawing a square with side length ${this.sideLength}`);
+    }
+}
+
+class Triangle implements Shape {
+    constructor(private base: number, private height: number) {}
+    draw() {
+        console.log(`Drawing a triangle with base ${this.base} and height ${this.height}`);
+    }
+}
+
+abstract class ShapeFactory {
+    abstract createShape(...args: any[]): Shape;
+    validate(...args: any[]): void {}
+}
+
+class CircleFactory extends ShapeFactory {
+    createShape(radius: number): Shape {
+        console.log(`Creating a circle with radius ${radius}`);
+        return new Circle(radius);
+    }
+}
+
+class SquareFactory extends ShapeFactory {
+    createShape(sideLength: number): Shape {
+        console.log(`Creating a square with side length ${sideLength}`);
+        if (sideLength <= 0) {
+            throw new Error("Side length must be positive");
+        }
+        return new Square(sideLength);
+    }
+}
+
+class TriangleFactory extends ShapeFactory {
+    createShape(base: number, height: number): Shape {
+        console.log(`Creating a triangle with base ${base} and height ${height}`);
+        return new Triangle(base, height);
+    }
+}
+
+const circleFactory = new CircleFactory();
+const squareFactory = new SquareFactory();
+const triangleFactory = new TriangleFactory();
+
+```
+
+In this example, the SquareFactory class includes the validation logic directly in the createShape() method, which ensures that the Square object is only created with a positive side length. This approach achieves the Open/Closed Principle by allowing the Square object creation process to be extended without modifying the existing code. If you needed to add validation to other shapes, you could create a separate factory class with the validation logic for that shape, without modifying the existing CircleFactory or TriangleFactory classes.
