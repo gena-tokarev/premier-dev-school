@@ -223,3 +223,128 @@ const triangleFactory = new TriangleFactory();
 ```
 
 In this example, the SquareFactory class includes the validation logic directly in the createShape() method, which ensures that the Square object is only created with a positive side length. This approach achieves the Open/Closed Principle by allowing the Square object creation process to be extended without modifying the existing code. If you needed to add validation to other shapes, you could create a separate factory class with the validation logic for that shape, without modifying the existing CircleFactory or TriangleFactory classes.
+
+### Example 3
+
+Let's try to modify this code to adhere to OCP:
+
+```typescript
+abstract class Shape {
+  abstract calculateArea(): number;
+}
+
+class Circle extends Shape {
+  constructor(private radius: number) {
+    super();
+  }
+
+  calculateArea(): number {
+    return Math.PI * this.radius ** 2;
+  }
+}
+
+class Square extends Shape {
+  constructor(private sideLength: number) {
+    super();
+  }
+
+  calculateArea(): number {
+    return this.sideLength ** 2;
+  }
+}
+
+class Triangle extends Shape {
+  constructor(private base: number, private height: number) {
+    super();
+  }
+
+  calculateArea(): number {
+    return 0.5 * this.base * this.height;
+  }
+}
+
+function printArea(shape: Shape) {
+  console.log(`Area of shape: ${shape.calculateArea()}`);
+}
+
+```
+
+To adhere to the Open/Closed Principle (OCP) in this example, we could use the Strategy and Dependency inversion pattern to separate the area calculation algorithm from the Shape classes themselves.
+
+```typescript
+abstract class Shape {
+  constructor(private areaCalculator: AreaCalculator) {}
+
+  calculateArea(): number {
+    return this.areaCalculator.calculateArea(this);
+  }
+}
+
+class Circle extends Shape {
+  constructor(public radius: number, areaCalculator: AreaCalculator) {
+    super(areaCalculator);
+  }
+}
+
+class Square extends Shape {
+  constructor(public sideLength: number, areaCalculator: AreaCalculator) {
+    super(areaCalculator);
+  }
+}
+
+class Triangle extends Shape {
+  constructor(public base: number, public height: number, areaCalculator: AreaCalculator) {
+    super(areaCalculator);
+  }
+}
+
+interface AreaCalculator {
+  calculateArea(shape: Shape): number;
+}
+
+class CircleAreaCalculator implements AreaCalculator {
+  calculateArea(shape: Shape): number {
+    if (shape instanceof Circle) {
+      return Math.PI * shape.radius ** 2;
+    }
+    throw new Error('Invalid shape');
+  }
+}
+
+class SquareAreaCalculator implements AreaCalculator {
+  calculateArea(shape: Shape): number {
+    if (shape instanceof Square) {
+      return shape.sideLength ** 2;
+    }
+    throw new Error('Invalid shape');
+  }
+}
+
+class TriangleAreaCalculator implements AreaCalculator {
+  calculateArea(shape: Shape): number {
+    if (shape instanceof Triangle) {
+      return 0.5 * shape.base * shape.height;
+    }
+    throw new Error('Invalid shape');
+  }
+}
+
+// Usage
+
+const circleCalculator = new CircleAreaCalculator();
+const squareCalculator = new SquareAreaCalculator();
+const triangleCalculator = new TriangleAreaCalculator();
+
+const circle = new Circle(5, circleCalculator);
+const square = new Square(4, squareCalculator);
+const triangle = new Triangle(3, 6, triangleCalculator);
+
+console.log(`Area of circle: ${circle.calculateArea()}`); // Output: Area of circle: 78.53981633974483
+console.log(`Area of square: ${square.calculateArea()}`); // Output: Area of square: 16
+console.log(`Area of triangle: ${triangle.calculateArea()}`); // Output: Area of triangle: 9
+
+```
+
+In this example, we have modified the `Shape` classes to depend on an `AreaCalculator` object that is passed to their constructor. This allows the `Shape` classes to use the `AreaCalculator` object to calculate their area, without knowing anything about the specific `AreaCalculator` implementation being used.
+
+This approach adheres to the Open/Closed Principle, because it allows us to add new `Shape` subclasses without modifying the existing `Shape` classes or the `AreaCalculator` implementations. To add a new shape type, we would simply need to create a new `Shape` subclass that uses an `AreaCalculator` implementation that calculates the area of that shape. This approach also provides a more flexible and maintainable codebase, as each shape type and area calculator can be extended and modified independently of the others.
