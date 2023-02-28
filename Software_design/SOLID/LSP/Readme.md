@@ -68,9 +68,12 @@ const cat = new Cat("Whiskers");
 interactWithAnimal(dog); // Prints "Fido says Woof!" and "Fido is wagging its tail!"
 interactWithAnimal(cat); // Prints "Whiskers says Meow!" and "Whiskers is purring!"
 ```
-This violates the Liskov substitution principle because it means that instances of Dog and Cat are not fully substitutable for instances of Animal. If a calling code relies on the behavior of interactWithAnimal, and passes in an object that is not a Dog or Cat instance but still implements the Animal interface, it may not behave correctly because it does not expect the additional methods to be called.
+This violates the Liskov substitution principle because it means that instances of Dog and Cat are not fully substitutable for instances of Animal. If a calling code relies on the behavior of `interactWithAnimal`, and passes in an object that is not a Dog or Cat instance but still implements the Animal interface, it may not behave correctly because it does not expect the additional methods to be called.
+TypeScript did not give us an error because the `interactWithAnimal` function expects an `Animal` instance, which the `Dog` and `Cat` instances are subclasses of.
 
-We can modify the interactWithAnimal function to adhere to the Liskov substitution principle by removing the conditional statements that check the type of the object and instead relying on the behavior defined in the Animal interface. Here's an updated version of the function:
+However, the problem with violating the Liskov substitution principle is not one of type safety, but rather one of correctness. Even though TypeScript allows us to pass a `Cat` or `Dog` instance to the `interactWithAnimal` function, the behavior of the program may not be what we expect if the `Cat` or `Dog` instance has additional behavior that is not part of the `Animal` class.
+
+We can modify the `interactWithAnimal` function to adhere to the Liskov substitution principle by removing the conditional statements that check the type of the object and instead relying on the behavior defined in the `Animal` interface. Here's an updated version of the function:
 ```typescript
 function interactWithAnimal(animal: Animal) {
   console.log(`${animal.name} says ${animal.speak()}`);
