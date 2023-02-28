@@ -272,72 +272,88 @@ function printArea(shape: Shape) {
 To adhere to the Open/Closed Principle (OCP) in this example, we could use the Strategy and Dependency inversion pattern to separate the area calculation algorithm from the Shape classes themselves.
 
 ```typescript
+import { injectable, inject, Container } from 'inversify';
+
 abstract class Shape {
-  constructor(private areaCalculator: AreaCalculator) {}
+    constructor(@inject('AreaCalculator') private areaCalculator: AreaCalculator) {}
 
-  calculateArea(): number {
-    return this.areaCalculator.calculateArea(this);
-  }
+    calculateArea(): number {
+        return this.areaCalculator.calculateArea(this);
+    }
 }
 
+@injectable()
 class Circle extends Shape {
-  constructor(public radius: number, areaCalculator: AreaCalculator) {
-    super(areaCalculator);
-  }
+    constructor(public radius: number, @inject('AreaCalculator') areaCalculator: AreaCalculator) {
+        super(areaCalculator);
+    }
 }
 
+@injectable()
 class Square extends Shape {
-  constructor(public sideLength: number, areaCalculator: AreaCalculator) {
-    super(areaCalculator);
-  }
+    constructor(public sideLength: number, @inject('AreaCalculator') areaCalculator: AreaCalculator) {
+        super(areaCalculator);
+    }
 }
 
+@injectable()
 class Triangle extends Shape {
-  constructor(public base: number, public height: number, areaCalculator: AreaCalculator) {
-    super(areaCalculator);
-  }
+    constructor(public base: number, public height: number, @inject('AreaCalculator') areaCalculator: AreaCalculator) {
+        super(areaCalculator);
+    }
 }
 
 interface AreaCalculator {
-  calculateArea(shape: Shape): number;
+    calculateArea(shape: Shape): number;
 }
 
+@injectable()
 class CircleAreaCalculator implements AreaCalculator {
-  calculateArea(shape: Shape): number {
-    if (shape instanceof Circle) {
-      return Math.PI * shape.radius ** 2;
+    calculateArea(shape: Shape): number {
+        if (shape instanceof Circle) {
+            return Math.PI * shape.radius ** 2;
+        }
+        throw new Error('Invalid shape');
     }
-    throw new Error('Invalid shape');
-  }
 }
 
+@injectable()
 class SquareAreaCalculator implements AreaCalculator {
-  calculateArea(shape: Shape): number {
-    if (shape instanceof Square) {
-      return shape.sideLength ** 2;
+    calculateArea(shape: Shape): number {
+        if (shape instanceof Square) {
+            return shape.sideLength ** 2;
+        }
+        throw new Error('Invalid shape');
     }
-    throw new Error('Invalid shape');
-  }
 }
 
+@injectable()
 class TriangleAreaCalculator implements AreaCalculator {
-  calculateArea(shape: Shape): number {
-    if (shape instanceof Triangle) {
-      return 0.5 * shape.base * shape.height;
+    calculateArea(shape: Shape): number {
+        if (shape instanceof Triangle) {
+            return 0.5 * shape.base * shape.height;
+        }
+        throw new Error('Invalid shape');
     }
-    throw new Error('Invalid shape');
-  }
 }
+
+// Create the InversifyJS container
+const container = new Container();
+
+// Register the bindings
+container.bind<AreaCalculator>('AreaCalculator').to(CircleAreaCalculator).whenTargetNamed('Circle');
+container.bind<AreaCalculator>('AreaCalculator').to(SquareAreaCalculator).whenTargetNamed('Square');
+container.bind<AreaCalculator>('AreaCalculator').to(TriangleAreaCalculator).whenTargetNamed('Triangle');
+
+container.bind<Shape>('Shape').to(Circle).whenTargetNamed('Circle');
+container.bind<Shape>('Shape').to(Square).whenTargetNamed('Square');
+container.bind<Shape>('Shape').to(Triangle).whenTargetNamed('Triangle');
 
 // Usage
 
-const circleCalculator = new CircleAreaCalculator();
-const squareCalculator = new SquareAreaCalculator();
-const triangleCalculator = new TriangleAreaCalculator();
-
-const circle = new Circle(5, circleCalculator);
-const square = new Square(4, squareCalculator);
-const triangle = new Triangle(3, 6, triangleCalculator);
+const circle = container.resolve<Shape>('Shape', { named: 'Circle' });
+const square = container.resolve<Shape>('Shape', { named: 'Square' });
+const triangle = container.resolve<Shape>('Shape', { named: 'Triangle' });
 
 console.log(`Area of circle: ${circle.calculateArea()}`); // Output: Area of circle: 78.53981633974483
 console.log(`Area of square: ${square.calculateArea()}`); // Output: Area of square: 16
