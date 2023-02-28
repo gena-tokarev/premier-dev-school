@@ -10,7 +10,7 @@ It correlates with other design principles (for example SRP).
 
 If you follow SRP then you most likely to achieve OCP, since if your class is responsible for one thing only, you easily can apply OCP using some structural patterns such as Factory without changing the class code.
 
-## Examples:
+## Examples in code:
 
 ### Example 1:
 
