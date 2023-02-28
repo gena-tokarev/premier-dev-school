@@ -269,7 +269,7 @@ function printArea(shape: Shape) {
 
 ```
 
-To adhere to the Open/Closed Principle (OCP) in this example, we could use the Strategy and Dependency inversion pattern to separate the area calculation algorithm from the Shape classes themselves.
+To adhere to the Open/Closed Principle (OCP) in this example, we could use the `Strategy` and `Dependency inversion` patterns to separate the area calculation algorithm from the `Shape` classes themselves.
 
 ```typescript
 import { injectable, inject, Container } from 'inversify';
