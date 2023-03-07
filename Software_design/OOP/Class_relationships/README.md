@@ -3,6 +3,9 @@
 ### ==Important to understand==
 You cannot always determine the type of relationship between a parent class and its child classes just by looking at how they are passed to the parent class as parameters. The relationship between the parent class and its child classes is determined by the nature of the relationship between the objects themselves, which is typically based on the semantics of the problem being modeled.
 
+Nice video about class relationships:
+https://www.youtube.com/watch?v=sN2_CoB_kbw
+
 ## Association
 
 Association in OOP represents a relationship between two or more classes where the objects of one class are connected to the objects of another class based on some criteria, but there is no ownership or containment relationship between them.
