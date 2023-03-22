@@ -9,7 +9,9 @@ A refresh token is a separate token that is used to obtain a new access token (J
 1. **Security**: Access tokens are usually short-lived, which limits the potential damage if they are compromised. When an access token expires, the refresh token can be used to get a new access token without requiring the user to re-authenticate.
 2. **User experience**: Since the refresh token can be used to obtain a new access token, users don't need to log in again when their access tokens expire, providing a smoother user experience.
 
-![img_1.png](img_1.png)
+![img_2.png](img_2.png)
+
+Note: Usually when we request a new access token the refresh token remains the same.
 
 ## Where to store both tokens and how to transfer them
 
@@ -67,4 +69,4 @@ XSS. If you store the token in a place where JS has access to. For example Local
 #### Request a protected resource with invalid access token and valid refresh token:
 1. Client gets an error.
 2. Client makes a request to the refresh token endpoint (/refresh-token).
-3. Client gets a response with a new access token (the refresh token remains the same). Client is not required to re-authenticate.
+3. Client gets a response with a new access token. Client is not required to re-authenticate. The refresh token usually remains the same. If we issue a new refresh token as well, then we might have problems on other devices with active session because they'll have invalid refresh tokens, and they'll be required to re-authenticate.
