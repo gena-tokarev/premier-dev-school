@@ -5,6 +5,9 @@ It is a communication protocol that allows one program to request a service or e
 
 RPC abstracts the complexity of remote calls, allowing developers to invoke remote procedures as if they were local functions. 
 
+### Important note:
+REST is a resource-oriented interface.
+RPC is an action-oriented interface.
 
 ## gRPC
 Provides an additional level of abstraction over the standard HTTP tools.
