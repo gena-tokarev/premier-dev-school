@@ -22,3 +22,7 @@ Also, it's worth noting that Redux is not recommended for use in forms. So any d
 **Examples**:
 1. User's profile.
 2. Cases where only a single administrator has access to the data.
+
+In any other cases it might be on overkill considering all the trade-offs.
+
+Also, it's usually better to go with a simpler solution if the complexity of the application in the future is unknown.
